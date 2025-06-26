@@ -86,29 +86,31 @@ class VideoGeneratorService
       convert << "-size" << "1920x1080"
       convert << "canvas:#1a1a1a"  # Dark background
 
-      # Add logo (resize to fit)
+      # Add logo (resize to fit, positioned higher)
       convert << "("
       convert << logo_path
-      convert << "-resize" << "600x600>"
+      convert << "-resize" << "400x400>"  # Smaller logo
       convert << "-gravity" << "center"
-      convert << "-geometry" << "+0-200"
+      convert << "-geometry" << "+0-300"  # Move logo higher up
       convert << ")"
       convert << "-composite"
 
-      # Add title
-      convert << "-font" << "Arial"
+      # Add title with better spacing and size
+      convert << "-font" << "Arial-Bold"  # Use bold for better readability
       convert << "-fill" << "white"
-      convert << "-pointsize" << "72"
+      convert << "-pointsize" << "60"  # Smaller font size
       convert << "-gravity" << "center"
-      convert << "-annotate" << "+0+150" << title
+      convert << "-size" << "1800x"  # Set width constraint for text wrapping
+      convert << "-annotate" << "+0+50" << word_wrap(title, 50)  # Position closer to center
 
-      # Add description (if present)
+      # Add description with better positioning
       if description.present?
         convert << "-font" << "Arial"
         convert << "-fill" << "#cccccc"
-        convert << "-pointsize" << "36"
+        convert << "-pointsize" << "28"  # Smaller description font
         convert << "-gravity" << "center"
-        convert << "-annotate" << "+0+300" << word_wrap(description, 40)
+        convert << "-size" << "1700x"  # Width constraint for description
+        convert << "-annotate" << "+0+200" << word_wrap(description, 80)  # More characters per line, better positioning
       end
 
       convert << output_path.to_s
@@ -151,6 +153,25 @@ class VideoGeneratorService
   end
 
   def word_wrap(text, max_chars)
-    text.scan(/.{1,#{max_chars}}(?:\s|$)/).join("\n")
+    words = text.split(" ")
+    lines = []
+    current_line = []
+
+    words.each do |word|
+      # Check if adding this word would exceed the line length
+      test_line = (current_line + [ word ]).join(" ")
+      if test_line.length <= max_chars
+        current_line << word
+      else
+        # Start a new line
+        lines << current_line.join(" ") unless current_line.empty?
+        current_line = [ word ]
+      end
+    end
+
+    # Add the last line
+    lines << current_line.join(" ") unless current_line.empty?
+
+    lines.join("\n")
   end
 end

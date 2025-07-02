@@ -1,0 +1,39 @@
+<!-- app/views/playlists/index.html.erb -->
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-3xl font-bold text-gray-900">My Playlists</h1>
+  <%= link_to "Create Playlist", new_playlist_path, class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" %>
+</div>
+
+<% if @playlists.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @playlists.each do |playlist| %>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2"><%= playlist[:title] %></h3>
+          <p class="text-gray-600 mb-4"><%= truncate(playlist[:description], length: 100) %></p>
+          
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500"><%= playlist[:item_count] %> videos</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                         <%= playlist[:privacy_status] == 'public' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+              <%= playlist[:privacy_status].capitalize %>
+            </span>
+          </div>
+          
+          <div class="flex space-x-2">
+            <%= link_to "View", playlist_path(playlist[:playlist_id]), class: "bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" %>
+            <%= link_to "Edit", edit_playlist_path(playlist[:playlist_id]), class: "bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600" %>
+            <a href="<%= playlist[:url] %>" target="_blank" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+              YouTube
+            </a>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <p class="text-gray-500 mb-4">No playlists found</p>
+    <%= link_to "Create your first playlist", new_playlist_path, class: "bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600" %>
+  </div>
+<% end %>

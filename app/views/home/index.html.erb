@@ -1,0 +1,19 @@
+<!-- app/views/home/index.html.erb -->
+<div class="text-center">
+  <h1 class="text-4xl font-bold text-gray-900 mb-8">YouTube Manager</h1>
+  <p class="text-xl text-gray-600 mb-8">Manage your YouTube videos and playlists</p>
+  
+  <% if user_signed_in? %>
+    <p class="mb-4">Welcome, <%= current_user.name || current_user.email %>!</p>
+    <%= link_to "Go to Videos", videos_path, class: "bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 inline-block mr-4" %>
+    <%= button_to "Sign Out", destroy_user_session_path, 
+        method: :delete, 
+        class: "bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-700 inline-block" %>
+  <% else %>
+    <%= button_to "Sign in with Google", 
+        user_google_oauth2_omniauth_authorize_path, 
+        method: :post,
+        data: { turbo: false },
+        class: "bg-red-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-700 inline-block" %>
+  <% end %>
+</div>
